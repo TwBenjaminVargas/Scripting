@@ -1,0 +1,114 @@
+[
+  {
+    "gender": "male",
+    "name": {
+      "title": "Mr",
+      "first": "Frederikke",
+      "last": "Jørgensen"
+    },
+    "location": {
+      "street": {
+        "number": 1481,
+        "name": "Pilevej"
+      },
+      "city": "Oure",
+      "state": "Nordjylland",
+      "country": "Denmark",
+      "postcode": 47946,
+      "coordinates": {
+        "latitude": "-38.9077",
+        "longitude": "-20.6490"
+      },
+      "timezone": {
+        "offset": "+5:00",
+        "description": "Ekaterinburg, Islamabad, Karachi, Tashkent"
+      }
+    },
+    "email": "frederikke.jorgensen@example.com",
+    "login": {
+      "uuid": "54a29986-99f4-4705-adf6-5f02c4bf26cb",
+      "username": "yellowgorilla422",
+      "password": "street",
+      "salt": "KL0sBbt3",
+      "md5": "7f3407e066043f0d576ce0fcfed06c8e",
+      "sha1": "53492c75be0f358b942c330d33c3790cb324dcf2",
+      "sha256": "6cdb9bbc329b4c2cf6573d807a3e479f164c9a69ceac877252ba8d801a196f9a"
+    },
+    "dob": {
+      "date": "1999-06-23T23:45:35.749Z",
+      "age": 27
+    },
+    "registered": {
+      "date": "2003-04-08T05:44:27.442Z",
+      "age": 23
+    },
+    "phone": "83791477",
+    "cell": "97522061",
+    "id": {
+      "name": "CPR",
+      "value": "230699-2889"
+    },
+    "picture": {
+      "large": "https://randomuser.me/api/portraits/men/16.jpg",
+      "medium": "https://randomuser.me/api/portraits/med/men/16.jpg",
+      "thumbnail": "https://randomuser.me/api/portraits/thumb/men/16.jpg"
+    },
+    "nat": "DK"
+  },
+  {
+    "gender": "female",
+    "name": {
+      "title": "Ms",
+      "first": "Ella",
+      "last": "Jean-Baptiste"
+    },
+    "location": {
+      "street": {
+        "number": 7828,
+        "name": "Charles St"
+      },
+      "city": "Port Elgin",
+      "state": "Yukon",
+      "country": "Canada",
+      "postcode": "N7Z 5S6",
+      "coordinates": {
+        "latitude": "-72.3138",
+        "longitude": "43.2187"
+      },
+      "timezone": {
+        "offset": "+3:00",
+        "description": "Baghdad, Riyadh, Moscow, St. Petersburg"
+      }
+    },
+    "email": "ella.jean-baptiste@example.com",
+    "login": {
+      "uuid": "56b8c3ae-2177-485e-8c4d-ce68347b8347",
+      "username": "ticklishpeacock900",
+      "password": "donner",
+      "salt": "eDCIv4FV",
+      "md5": "1692da27ff1ca2f53a53a53aaa0e9063",
+      "sha1": "78e6257473d7d8818f070a296b85ba37f0e0c6de",
+      "sha256": "a97b9c01b704c1c21a8e8270c2eb566219f84200f53f3dc4a3a908f6cf96b6ed"
+    },
+    "dob": {
+      "date": "1967-09-27T08:31:03.654Z",
+      "age": 58
+    },
+    "registered": {
+      "date": "2013-02-05T12:02:16.986Z",
+      "age": 13
+    },
+    "phone": "H47 O12-4407",
+    "cell": "F40 I97-9205",
+    "id": {
+      "name": "SIN",
+      "value": "250335288"
+    },
+    "picture": {
+      "large": "https://randomuser.me/api/portraits/women/20.jpg",
+      "medium": "https://randomuser.me/api/portraits/med/women/20.jpg",
+      "thumbnail": "https://randomuser.me/api/portraits/thumb/women/20.jpg"
+    },
+    "nat": "CA"
+  }
+]
