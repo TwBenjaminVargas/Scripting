@@ -1,5 +1,5 @@
 import net from 'node:net';
-import os from 'node:os';
+import { getosinfo } from './modules/osinfo.mjs';
 
 // Lectura de variables de entorno
 const port = process.env.PORT || 7777;
@@ -8,69 +8,18 @@ const port = process.env.PORT || 7777;
 const clientData = socket => {return `${socket.remoteAddress}:${socket.remotePort}`;}
 
 // Documentacion de Agente
-const commandsDocumentation ="quit --> Cerrar conexión";
+const commandsDocumentation ="getosinfo <n> --> informacion de memoria y cpu del servidor hace n segundos\n" +
+                            "quit --> Cerrar conexión\n";
 
 // Respuesta estandar
 const serverResponse = (msj,command,err = false) =>
     {
-        return `${JSON.stringify({err: err, command: command, content: msj},null,2)}\n`
+        return `\n${JSON.stringify({err: err, command: command, content: msj},null,2)}\n\n`
     }
 
-
-// Medicion de metricas
-const serverMetrics = [];
-
-setInterval(() => {
-    
-    // Metricas de memoria (Bytes a GB)
-    const totalMemGB = (os.totalmem() / (1024 ** 3)).toFixed(2); // dos decimales
-    const freeMemGB = (os.freemem() / (1024 ** 3)).toFixed(2);
-    const freeMemPercent = ((os.freemem() / os.totalmem()) * 100).toFixed(2);
-
-    const memdata = {total: totalMemGB, free: freeMemGB, freePercent: freeMemPercent};
-    
-    // Metricas y datos de CPU
-    const cpus = os.cpus();
-    const cpuAvgLoad= os.loadavg();
-
-    const cpudata = {model: cpus[0].model, cores: cpus.length, avgload: cpuAvgLoad};
-    
-    const timestamp = Date.now()
-
-    const sample = {time: timestamp, cpu: cpudata, memory: memdata};
-
-    if (serverMetrics.length > 120)
-        serverMetrics.shift(); // quita inicio
-
-    serverMetrics.push(sample);
-    
-    console.log(`${timestamp} - Metricas de sistema tomadas`);
-
-
-}, 30_000); // 30 segundos
 
 // Obtencion de argumentos
-const parseCommand = (text) =>
-    {
-        return text.trim().split(' ');
-    }
-
-// Comandos
-const getosinfo = (time=0)=>
-    {
-        if (time < 0)
-            throw new Error ("El tiempo ingresado no puede ser negativo");
-        if (time > 3600)
-            throw new Error ("El tiempo ingresado no puede superar la hora (3600 seg.)");
-        if (time === 0)
-            return serverMetrics.slice(-1);
-
-        const samplesRequired = Math.ceil(time / 30) // redondeo hacia arriba
-
-        return serverMetrics.slice(-samplesRequired) // tomar las ultimas muestras requeridas
-
-    }
-
+const parseCommand = (text) => {return text.trim().split(' ');}
 
 const server=net.createServer(
     socket => 
@@ -89,7 +38,7 @@ const server=net.createServer(
                         case 'getosinfo':
                             try
                             {
-                                socket.write(serverResponse(getosinfo(Number(command[1])),data))
+                                socket.write(serverResponse(getosinfo(Number(command[1]) || 0),data))
                             }
                             catch (error)
                             {
