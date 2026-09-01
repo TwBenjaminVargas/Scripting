@@ -18,13 +18,32 @@ loadTokenList(tokenlist);
 // Datos de cliente socket
 const clientData = socket => {return `${socket.remoteAddress}:${socket.remotePort}`;}
 
+// Colores para consola
+const COLORS = {
+    reset: "\x1b[0m",
+    bright: "\x1b[1m",
+    dim: "\x1b[2m",
+    red: "\x1b[31m",
+    green: "\x1b[32m",
+    yellow: "\x1b[33m",
+    cyan: "\x1b[36m"
+};
+
 // Documentacion de Agente
 const commandsDocumentation = [
-    "--- Comandos Públicos ---",
+    "--- ESTRUCTURA DE RESPUESTA JSON ---",
+    "Todas las respuestas (salvo 'help-cli') se envían con el siguiente formato:",
+    "{",
+    '  "command": "<comando enviado por el cliente>",',
+    '  "content": "<resultado obtenido o mensaje de error>",',
+    '  "err": true | false',
+    "}",
+    "",
+    "--- COMANDOS PÚBLICOS ---",
     "login <token>           Inicia sesión en la conexión actual",
     "quit                    Cierra la conexión TCP con el servidor",
-    "help                    Muestra ayuda en formato JSON",
-    "help-cli                Muestra ayuda en texto plano, util para CLI",
+    "help                    Muestra este menú formateado en JSON",
+    "help-cli                Muestra este menú en texto plano directo",
     "",
     "--- COMANDOS RESTRINGIDOS (Requieren login) ---",
     "getosinfo [n]           Uso de CPU y RAM hace <n> segundos (default: 0)",
@@ -37,11 +56,12 @@ const commandsDocumentation = [
 // Respuesta estandar
 const serverResponse = (msj,command,err = false) =>
     {
-        return `\n${JSON.stringify({command: command, content: msj,err: err},null,2)}\n\n`
+        const color = err ? COLORS.red : COLORS.green;
+        return `\n${color}${COLORS.bright}${JSON.stringify({command: command, content: msj,err: err},null,2)}${COLORS.reset}\n\n> `
     }
 
 // comandos de acceso publico
-const publicCommands = new Set(['login', 'quit', 'help', 'help-cli','']);
+const publicCommands = new Set(['login', 'quit', 'help', 'help-cli', '']);
 
 // Obtencion de argumentos
 const parseCommand = (text) => {return parseArgsStringToArgv(text)}
@@ -53,23 +73,24 @@ const server=net.createServer(
             let auth = false;
             socket.setEncoding('utf8');
             console.log(`INFO - ${Date.now()}: Nueva conexión ${clientData(socket)}`)
-            socket.write(`\nBenjamin Vargas - Server Agent 2026\n(Usa "help-cli" para consultar documentación)\n\n`);
+            socket.write(`\n${COLORS.cyan}${COLORS.bright}Benjamin Vargas - Server Agent 2026\n(Usa "help-cli" para consultar documentación)\n\n${COLORS.reset}> `);
 
              socket.on('data', async data=>
                 {
                     const datastr = data.toString()
                     try
                     {
-                        const command = parseCommand(datastr);
+                        const command = datastr.trim() ? parseCommand(datastr) : [''];
                         if (!publicCommands.has(command[0]) && !auth)
                             throw new Error("Necesitas estar autenticado para usar ese comando")
 
                         switch(command[0])
                         {
                             case '':
+                                socket.write("> ");
                                 break;
                             case 'login':
-                                if (authenticate(command[1]))
+                                if (authenticate(command[1]) && !auth)
                                 {
                                     auth=true;
                                     console.log(`ÌNFO - ${Date.now()}: login registrado ${clientData(socket)}, token: ${command[1]}`);
@@ -114,7 +135,7 @@ const server=net.createServer(
                                 socket.write(serverResponse(commandsDocumentation,datastr));
                                 break;
                             case 'help-cli':
-                                socket.write(`\n${commandsDocumentation}\n\n`);
+                                socket.write(`\n${COLORS.yellow}${commandsDocumentation}\n\n${COLORS.reset}> `);
                                 break;
 
                             default:
@@ -124,7 +145,7 @@ const server=net.createServer(
                     }
                     catch(error)
                     {
-                        console.log(`ERROR - ${Date.now()}: ${clientData(socket)} ${error.message}`);
+                        console.log(`ERROR - ${Date.now()}: Cliente ${clientData(socket)} Mensaje: ${error.message}`);
                         socket.write(serverResponse(error.message,datastr,true));
                     }
 
