@@ -4,18 +4,35 @@ import { getosinfo } from './modules/osinfo.mjs';
 import { getwatches, watch } from './modules/watch.mjs';
 import { ps } from './modules/ps.mjs';
 import { oscmd, loadWhiteList } from './modules/oscmd.mjs';
+import { authenticate, loadTokenList } from './modules/auth.mjs';
 
 // Lectura de variables de entorno
 const port = process.env.PORT || 7777;
 const whitelist = process.env.WHITELIST || "wlist.json";
+const tokenlist = process.env.TOKENLIST || "tlist.json";
+
+// Lectura de archivos de configuracion
 loadWhiteList(whitelist);
+loadTokenList(tokenlist);
 
 // Datos de cliente socket
 const clientData = socket => {return `${socket.remoteAddress}:${socket.remotePort}`;}
 
 // Documentacion de Agente
-const commandsDocumentation ="getosinfo <n> --> informacion de memoria y cpu del servidor hace n segundos\n" +
-                            "quit --> Cerrar conexión\n";
+const commandsDocumentation = [
+    "--- Comandos Públicos ---",
+    "login <token>           Inicia sesión en la conexión actual",
+    "quit                    Cierra la conexión TCP con el servidor",
+    "help                    Muestra ayuda en formato JSON",
+    "help-cli                Muestra ayuda en texto plano, util para CLI",
+    "",
+    "--- COMANDOS RESTRINGIDOS (Requieren login) ---",
+    "getosinfo [n]           Uso de CPU y RAM hace <n> segundos (default: 0)",
+    "ps                      Lista los procesos activos del servidor",
+    "oscmd <comando>         Ejecuta un comando del SO permitido en la whitelist",
+    "watch <path> [timeout]  Inicia monitoreo en un path por <timeout> seg (default: 60)",
+    "getwatches <token>      Obtiene cambios registrados para un token de monitoreo"
+].join('\n');
 
 // Respuesta estandar
 const serverResponse = (msj,command,err = false) =>
@@ -23,16 +40,20 @@ const serverResponse = (msj,command,err = false) =>
         return `\n${JSON.stringify({command: command, content: msj,err: err},null,2)}\n\n`
     }
 
+// comandos de acceso publico
+const publicCommands = new Set(['login', 'quit', 'help', 'help-cli','']);
 
 // Obtencion de argumentos
 const parseCommand = (text) => {return parseArgsStringToArgv(text)}
 
+
 const server=net.createServer(
     socket => 
         {
+            let auth = false;
             socket.setEncoding('utf8');
             console.log(`INFO - ${Date.now()}: Nueva conexión ${clientData(socket)}`)
-            socket.write(`\nBenjamin Vargas - Server Agent 2026\n(Usa "help" para consultar documentación)\n\n`);
+            socket.write(`\nBenjamin Vargas - Server Agent 2026\n(Usa "help-cli" para consultar documentación)\n\n`);
 
              socket.on('data', async data=>
                 {
@@ -40,14 +61,25 @@ const server=net.createServer(
                     try
                     {
                         const command = parseCommand(datastr);
-                        
+                        if (!publicCommands.has(command[0]) && !auth)
+                            throw new Error("Necesitas estar autenticado para usar ese comando")
+
                         switch(command[0])
                         {
                             case '':
                                 break;
+                            case 'login':
+                                if (authenticate(command[1]))
+                                {
+                                    auth=true;
+                                    console.log(`ÌNFO - ${Date.now()}: login registrado ${clientData(socket)}, token: ${command[1]}`);
+                                    socket.write(serverResponse("Login Exitoso! Bienvenido!\n",datastr));
+                                }
+                                break;
                             
                             case 'oscmd':
                                 socket.write(serverResponse(await oscmd(command[1]),datastr));
+                                console.log(`INFO - ${Date.now()}: Se ejecuto el comando ${cmd}`);
                                 break;
 
                             case 'ps':
@@ -73,13 +105,16 @@ const server=net.createServer(
                                 break;
 
                             case 'quit':
-                                console.log(`${clientData(socket)} - Cerro sesión`);
+                                console.log(`INFO - ${Date.now()}: ${clientData(socket)} cerro sesión`);
                                 socket.write(serverResponse("Hasta luego!", datastr));
                                 socket.end();
                                 break;
 
                             case 'help':
                                 socket.write(serverResponse(commandsDocumentation,datastr));
+                                break;
+                            case 'help-cli':
+                                socket.write(`\n${commandsDocumentation}\n\n`);
                                 break;
 
                             default:
@@ -89,7 +124,7 @@ const server=net.createServer(
                     }
                     catch(error)
                     {
-                        console.log(`ERROR - ${Date.now()} :${clientData(socket)} ${error.message}`);
+                        console.log(`ERROR - ${Date.now()}: ${clientData(socket)} ${error.message}`);
                         socket.write(serverResponse(error.message,datastr,true));
                     }
 
@@ -97,9 +132,4 @@ const server=net.createServer(
         });
 
 server.listen(port);
-console.log(`Servidor corriendo en 127.0.0.1:${port}`);
-/*Ideas a añadir:
-        * entrada de puerto por paremtros de consola
-        * tiempo de toma de muestras por parametro de consola
-        * funcion de cuerpo de respuesta
-*/
+console.log(`\nINFO - ${Date.now()}: Servidor corriendo en 127.0.0.1:${port}`);

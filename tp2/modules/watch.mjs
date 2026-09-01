@@ -26,7 +26,7 @@ const watch = (path, timeout=60) =>
         setTimeout(() => 
             {
                 watcher.close();
-                console.log(`INFO - ${Date.now()} - Finalizo observación de "${path}", token:${watchertoken}`);
+                console.log(`INFO - ${Date.now()}: Finalizo observación de "${path}", token:${watchertoken}`);
 
             }, timeout * 1000);
         

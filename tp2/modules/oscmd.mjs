@@ -19,7 +19,7 @@ const oscmd = cmd =>
         if(!cmd.trim())
             throw new Error(`Es necesario especificar un comando`);
 
-        console.log(`INFO - ${Date.now()}: Se ejecuto el comando ${cmd}`);
+        console.log(`INFO - ${Date.now()}: Se intenta ejecutar el comando ${cmd}`);
         const cmdarr = cmd.trim().split(' ');
         if(whitelist.commands.includes(cmdarr[0]))
         {    
