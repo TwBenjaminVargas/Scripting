@@ -26,7 +26,7 @@ const server=net.createServer(
     socket => 
         {
             socket.setEncoding('utf8');
-            console.log(`Nueva conexión: ${clientData(socket)}`)
+            console.log(`INFO - ${Date.now()}: Nueva conexión ${clientData(socket)}`)
             socket.write(`\nBenjamin Vargas - Server Agent 2026\n(Usa "help" para consultar documentación)\n\n`);
 
              socket.on('data', data=>
@@ -44,7 +44,7 @@ const server=net.createServer(
                                 if(!command[1].trim())
                                     throw new Error("Debes especificar al menos un path");
                                 const watchtoken = watch(command[1],Number(command[2]) || 60);
-                                console.log(`INFO: ${clientData(socket)} inicio monitoreo de "${command[1]}", token: ${watchtoken}, timeout: ${command[2]}s`)
+                                console.log(`INFO - ${Date.now()}: ${clientData(socket)} inicio monitoreo de "${command[1]}", token: ${watchtoken}, timeout: ${command[2]}s`)
                                 socket.write(serverResponse(`Tu token de seguimiento es ${watchtoken}`,data));
                                 break;
                             case 'getwatches':
@@ -70,7 +70,7 @@ const server=net.createServer(
                     }
                     catch(error)
                     {
-                        console.log(`${clientData(socket)} - Error: ${error.message}`);
+                        console.log(`ERROR - ${Date.now()} :${clientData(socket)} ${error.message}`);
                         socket.write(serverResponse(error.message,data,true));
                     }
 

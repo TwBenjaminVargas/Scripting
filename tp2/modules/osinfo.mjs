@@ -25,7 +25,7 @@ setInterval(() => {
 
     serverMetrics.push(sample);
     
-    console.log(`${timestamp} - Metricas de sistema tomadas`);
+    console.log(`INFO - ${timestamp}: Metricas de sistema tomadas`);
 
 
 }, 30_000); // 30 segundos
