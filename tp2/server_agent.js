@@ -1,6 +1,7 @@
 import net from 'node:net';
 import { getosinfo } from './modules/osinfo.mjs';
 import { getwatches, watch } from './modules/watch.mjs';
+import { ps } from './modules/ps.mjs';
 
 // Lectura de variables de entorno
 const port = process.env.PORT || 7777;
@@ -29,7 +30,7 @@ const server=net.createServer(
             console.log(`INFO - ${Date.now()}: Nueva conexión ${clientData(socket)}`)
             socket.write(`\nBenjamin Vargas - Server Agent 2026\n(Usa "help" para consultar documentación)\n\n`);
 
-             socket.on('data', data=>
+             socket.on('data', async data=>
                 {
                     try
                     {
@@ -39,7 +40,11 @@ const server=net.createServer(
                         {
                             case '':
                                 break;
-                            
+
+                            case 'ps':
+                                socket.write(serverResponse(await ps(),data));
+                                break;
+                    
                             case 'watch':
                                 if(!command[1].trim())
                                     throw new Error("Debes especificar al menos un path");
@@ -47,22 +52,27 @@ const server=net.createServer(
                                 console.log(`INFO - ${Date.now()}: ${clientData(socket)} inicio monitoreo de "${command[1]}", token: ${watchtoken}, timeout: ${command[2]}s`)
                                 socket.write(serverResponse(`Tu token de seguimiento es ${watchtoken}`,data));
                                 break;
+                                
                             case 'getwatches':
                                 if(!command[1].trim())
                                     throw new Error("Debes especificar el token se seguimiento");
                                 socket.write(serverResponse(getwatches(command[1]),data));
                                 break;
+
                             case 'getosinfo':
                                 socket.write(serverResponse(getosinfo(Number(command[1]) || 0),data));
                                 break;
+
                             case 'quit':
                                 console.log(`${clientData(socket)} - Cerro sesión`);
                                 socket.write(serverResponse("Hasta luego!", data));
                                 socket.end();
                                 break;
+
                             case 'help':
                                 socket.write(serverResponse(commandsDocumentation,data));
                                 break;
+
                             default:
                                 socket.write(serverResponse("No se encontró comando coincidente!",data,true));
                                 break;
