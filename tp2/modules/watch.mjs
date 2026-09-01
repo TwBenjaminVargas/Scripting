@@ -6,9 +6,8 @@ const watchMap = new Map();
 
 const watch = (path, timeout=60) =>
     {
-        if (!fs.existsSync(path)) {
+        if (!fs.existsSync(path))
             throw new Error(`La ruta "${path}" no existe en el sistema.`);
-        }
 
         if(timeout>3600)
             throw new Error("El maximo periodo de observacion es 1 hora");

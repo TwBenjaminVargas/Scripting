@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "uptime",
+    "whoami",
+    "id",
+    "date",
+    "hostname",
+    "uname",
+    "pwd",
+    "df",
+    "free"
+  ]
+}
