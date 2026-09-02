@@ -100,7 +100,7 @@ const server=net.createServer(
                             
                             case 'oscmd':
                                 socket.write(serverResponse(await oscmd(command[1]),datastr));
-                                console.log(`INFO - ${Date.now()}: Se ejecuto el comando ${cmd}`);
+                                console.log(`INFO - ${Date.now()}: ${clientData(socket)} ejecuto el comando ${command[1]}`);
                                 break;
 
                             case 'ps':
