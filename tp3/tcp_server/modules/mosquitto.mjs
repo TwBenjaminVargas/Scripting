@@ -1,9 +1,9 @@
 import mqtt from "mqtt";
 import { logD, logI } from "./logger.mjs";
 
-let brokerUrl = process.env.MQTT_URL || "mqtt://localhost:1883"
-let clientId = process.env.CLIENT_ID || `snapshot_server_${Date.now()}`
-let topic = process.env.MQTT_TOPIC || "snapshot";
+const brokerUrl = process.env.MQTT_URL || "mqtt://localhost:1883"
+const clientId = process.env.CLIENT_ID || `snapshot_server_${Date.now()}`
+const topic = process.env.MQTT_TOPIC || "snapshot";
 
 
 const conf = {
