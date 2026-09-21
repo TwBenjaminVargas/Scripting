@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "mqtt": "^5.16.0",
     "string-argv": "^0.3.2"
   }
 }
