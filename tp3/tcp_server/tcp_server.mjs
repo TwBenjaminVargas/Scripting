@@ -2,10 +2,11 @@ import net from 'node:net';
 import { parseArgsStringToArgv } from 'string-argv'; // modulo especializado en parseo de argumentos en strings
 import { logD,logE,logI,logW, setLoggerLevel,LOGLEVEL } from './modules/logger.mjs';
 import { setSnapshotCommand, snapshot } from './modules/snapshot.mjs';
+import mosquitto from './modules/mosquitto.mjs';
 
 // Lectura de variables de entorno
 const port = process.env.PORT || 7777;
-const loggerLevel = process.env.LOGLEVEL || LOGLEVEL.DEBUG
+const loggerLevel = process.env.LOG_LEVEL || LOGLEVEL.INFO
 const snapshotCommand = process.env.SNAPSHOT_COMMAND || `ffmpeg -f v4l2 -i /dev/video0 -ss 1 -frames:v 1 -update 1 foto.jpg`;
 
 // establecer configuraciones
@@ -62,6 +63,7 @@ const server=net.createServer(
                                 break;
                             case 'snapshot':
                                 await snapshot();
+                                mosquitto.publish("Snapshot tomada y publicada en MQTT");
                                 break;
 
                             case 'help':
@@ -72,6 +74,7 @@ const server=net.createServer(
                                 logI(`Cliente: ${clientData(socket)} cerro sesión`)
                                 socket.write(serverResponse("OK", datastr));
                                 socket.end();
+                                mosquitto.close();
                                 break;
 
                             default:
