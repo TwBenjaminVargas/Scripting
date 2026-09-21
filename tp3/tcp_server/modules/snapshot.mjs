@@ -1,11 +1,15 @@
 import {spawn} from 'child_process';
 import { parseArgsStringToArgv } from 'string-argv';
 import { logD } from './logger.mjs';
-import { log } from 'console';
+import fs from 'fs';
 
-let snapshotCommand = `ffmpeg -f v4l2 -i /dev/video0 -vf "select=gte(n\\,30)" -frames:v 1 -update 1 foto.jpg`;
+const snapshotCommand = process.env.SNAPSHOT_COMMAND || `ffmpeg -y -f v4l2 -i /dev/video0 -vf "select=gte(n\\,30)" -frames:v 1 -update 1 snapshot.jpg`;
+const filepath = process.env.FILE_PATH || "./snapshot.jpg"
 const formatSnapshotcommand = commandstr => { return parseArgsStringToArgv(commandstr) };
-const setSnapshotCommand = commandStr => {snapshotCommand = commandStr};
+const pictureToB64 = ()=>
+    {
+        return fs.readFileSync(filepath, 'base64');
+    }
 const takeShanpshot= async ()=>
     {
         return new Promise ( (resolve,reject) =>
@@ -20,13 +24,23 @@ const takeShanpshot= async ()=>
                 process.stdout.on('data', data => {stdout +=data;});
                 process.stderr.on('data', data => {stderr += data});
                 process.on('error', err => reject(err));
-                process.on('close', errlvl => errlvl !== 0 
-                    ? reject(new Error(stderr || `Comando devolvio nivel de error ${errlvl}`)) 
-                    : resolve(stdout));
+                process.on('close', errlvl =>
+                    {
+                        if (errlvl !== 0)
+                            reject(new Error(stderr || `Comando devolvio nivel de error ${errlvl}`));
+                        
+                        try
+                        {
+                            resolve(pictureToB64());
+                        }
+                        catch (err)
+                        {
+                            reject(err);
+                        }
+                    });
             })
-
 
         
     };
 
-export {takeShanpshot as snapshot, setSnapshotCommand};
+export {takeShanpshot as snapshot};
