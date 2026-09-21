@@ -32,6 +32,7 @@ const publish = async (content) =>
                 (err) =>
                 {
                     if(err) return reject(err);
+                    logI(`Contenido publicado con exito en el topico ${topic}, mensaje: [${content.toString().slice(0,30)}...]`)
                     resolve();
                 }
             )

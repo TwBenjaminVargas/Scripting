@@ -1,6 +1,6 @@
 import {spawn} from 'child_process';
 import { parseArgsStringToArgv } from 'string-argv';
-import { logD } from './logger.mjs';
+import { logD, logI } from './logger.mjs';
 import fs from 'fs';
 
 const snapshotCommand = process.env.SNAPSHOT_COMMAND || `ffmpeg -y -f v4l2 -i /dev/video0 -vf "select=gte(n\\,30)" -frames:v 1 -update 1 snapshot.jpg`;
@@ -28,7 +28,7 @@ const takeShanpshot= async ()=>
                     {
                         if (errlvl !== 0)
                             reject(new Error(stderr || `Comando devolvio nivel de error ${errlvl}`));
-                        
+                        logI(`Fotografia tomada, ruta: ${filepath}`)
                         try
                         {
                             resolve(pictureToB64());

@@ -1,6 +1,6 @@
 import net from 'node:net';
 import { parseArgsStringToArgv } from 'string-argv'; // modulo especializado en parseo de argumentos en strings
-import { logE,logI,logW, setLoggerLevel,LOGLEVEL } from './modules/logger.mjs';
+import { logE,logI,logW, setLoggerLevel,LOGLEVEL, logD } from './modules/logger.mjs';
 import { snapshot } from './modules/snapshot.mjs';
 import mosquitto from './modules/mosquitto.mjs';
 
@@ -61,7 +61,9 @@ const server=net.createServer(
                                 break;
                             case 'snapshot':
                                 const imgb64 = await snapshot();
+                                logD(`Imagen codificada en Base64: [${imgb64.toString().slice(0,30)}]...`)
                                 mosquitto.publish(imgb64);
+                                socket.write(serverResponse("OK", datastr));
                                 break;
 
                             case 'help':
