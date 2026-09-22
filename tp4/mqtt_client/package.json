@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "chalk": "^6.0.0",
+    "cli-table3": "^0.6.5",
+    "mqtt": "^5.16.0"
+  }
+}
