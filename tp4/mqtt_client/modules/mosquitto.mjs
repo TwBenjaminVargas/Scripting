@@ -1,8 +1,17 @@
 import mqtt from "mqtt";
 import chalk from 'chalk';
+import minimist from 'minimist';
 
-const brokerUrl = process.env.MQTT_URL || "mqtt://localhost:1883"
-const clientId = process.env.CLIENT_ID || `mqtt_client_${Date.now()}`
+// Parsear argumentos de consola
+const argv = minimist(process.argv.slice(2));
+
+const host = argv.h || process.env.MQTT_HOST || "localhost";
+const port = argv.p || process.env.MQTT_PORT || 1883;
+const username = argv.u || process.env.MQTT_USER || undefined;
+const password = argv.P || process.env.MQTT_PASS || undefined;
+
+const brokerUrl = `mqtt://${host}:${port}`;
+const clientId = process.env.CLIENT_ID || `mqtt_client_${Date.now()}`;
 const qos = process.env.MQTT_QOS || 2;
 const responseTopic = process.env.RESPONSE_TOPIC || `clients/${clientId}/responses`;
 
