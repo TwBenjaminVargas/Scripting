@@ -22,6 +22,7 @@ const rl = readline.createInterface({
 mosquitto.onConnect(() => 
     {
         console.log(chalk.green.bold('\n=== Bienvenido al Cliente MQTT ===\n'));
+        console.log(chalk.cyan('\nUsa quit para salir del cliente.\n'));
         // Mostrar el prompt
         rl.prompt();
     });

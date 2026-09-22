@@ -7,18 +7,9 @@ const getCommandFromTopic = (topic) =>
     };
 
 const commandsDocumentation = [
-    "--- ESTRUCTURA DE RESPUESTA JSON ---",
-    "Todas las respuestas (salvo 'help') se envían con el siguiente formato:",
-    "{",
-    '  "command": "<comando enviado por el cliente>",',
-    '  "content": "<resultado obtenido o mensaje de error>",',
-    '  "err": true | false',
-    "}",
-    "",
-    "--- COMANDOS ---",
-    "ls                      Mustra el contenido del path especificado en el payload (ej: {\"path\":\"/home/user\"})",
-    "help                    Muestra este menú formateado en JSON"
-].join('\n');
+    { command: "ls [path]", description: "Muestra el contenido del directorio especificado (ej: ls /tmp)" },
+    { command: "help", description: "Muestra este menú de ayuda estructurado" }
+];
 
 // Devuelve una tupla (err,resultado) donde err es true si hubo error y resultado es el contenido o el mensaje de error
 const executeCommand = async (command, args="") =>
