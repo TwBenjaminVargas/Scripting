@@ -1,0 +1,15 @@
+services:
+  mosquitto:
+      image: eclipse-mosquitto:latest
+      container_name: mosquitto_broker
+      restart: always
+      ports:
+        - "1883:1883"   # Puerto MQTT estándar
+      volumes:
+        - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+        - mosquitto_data:/mosquitto/data
+        - mosquitto_log:/mosquitto/log
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
