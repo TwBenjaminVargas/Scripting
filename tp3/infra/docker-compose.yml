@@ -1,15 +1,32 @@
 services:
+
+  snapshot_server:
+      image: snapshot_server       # Usa la imagen que ya construiste previamente
+      container_name: snapshot_server_app
+      restart: unless-stopped
+      ports:
+        - "7777:7777"   # Puerto para el servidor TCP
+      environment:
+        - PORT=7777
+        - LOG_LEVEL=3
+        - MQTT_URL=mqtt://mosquitto:1883
+        - MQTT_TOPIC=snapshot
+
+      devices:
+        - /dev/video0:/dev/video0  # Mapeo de la cámara
+
+      depends_on:
+        - mosquitto
   mosquitto:
-    image: eclipse-mosquitto:latest
-    container_name: mosquitto_broker
-    restart: always
-    ports:
-      - "1883:1883"   # Puerto MQTT estándar
-      - "9001:9001"   # Puerto para WebSockets (opcional)
-    volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
+      image: eclipse-mosquitto:latest
+      container_name: mosquitto_broker
+      restart: always
+      ports:
+        - "1883:1883"   # Puerto MQTT estándar
+      volumes:
+        - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+        - mosquitto_data:/mosquitto/data
+        - mosquitto_log:/mosquitto/log
 
 volumes:
   mosquitto_data:
