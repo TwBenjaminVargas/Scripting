@@ -1,6 +1,6 @@
 import net from 'node:net';
 import { parseArgsStringToArgv } from 'string-argv'; // modulo especializado en parseo de argumentos en strings
-import { logE,logI,logW, setLoggerLevel,LOGLEVEL, logD } from './modules/logger.mjs';
+import { logE,logI, setLoggerLevel,LOGLEVEL, logD } from './modules/logger.mjs';
 import { snapshot } from './modules/snapshot.mjs';
 import mosquitto from './modules/mosquitto.mjs';
 
